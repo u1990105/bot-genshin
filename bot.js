@@ -43,7 +43,8 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-    console.log(`Bot listo como ${client.user.tag}`);
+    console.error(`Bot listo como ${client.user.tag}`);
+    console.error("@@@@@@@@@@@@@@@@@@@@@@@@")
 });
 
 client.on('messageCreate', async (message) => {
