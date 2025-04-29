@@ -1,12 +1,12 @@
-console.error("@@@@@@@@@@@@@@@@@@@@@@@@111")
+const express = require('express');
 const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
+const app = express();
+const port = 8080;
 
 // Parámetros de resina
 const RESINA_MAX = 200;
 const REGEN_POR_MINUTO = 0.125; // 1 resina cada 8 minutos
-let procesando = false;
-
 
 const objetivos = {
     "R": 200,
@@ -22,6 +22,11 @@ const connectionString = process.env.MONGO_DB_CONNECTION_STRING;
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a Cosmos DB'))
   .catch(err => console.log('Error de conexión: ', err));
+
+// Configuración de rutas de Express
+app.get('/', (req, res) => {
+    res.send('Bot de Resina está funcionando');
+});
 
 const recordatorioSchema = new mongoose.Schema({
     userId: String,
@@ -46,8 +51,12 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-    console.error(`Bot listo como ${client.user.tag}`);
-    console.error("@@@@@@@@@@@@@@@@@@@@@@@@12")
+    console.log(`Bot listo como ${client.user.tag}`);
+
+    // Iniciar el servidor Express cuando el bot esté listo
+    app.listen(port, () => {
+        console.log(`Servidor Express escuchando en http://localhost:8080`);
+    });
 
     // Crear el índice en fechaEnvio si no existe
     Recordatorio.collection.createIndex({ fechaEnvio: 1 })
@@ -207,6 +216,8 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+client.login(TOKEN);
+
 /*
 setInterval(async () => {
     if (procesando) return;
@@ -234,4 +245,4 @@ setInterval(async () => {
     }
 }, 60000); // Cada minuto*/
 
-client.login(TOKEN);
+
