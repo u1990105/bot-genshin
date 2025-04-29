@@ -205,7 +205,7 @@ client.on('messageCreate', async (message) => {
         return;
     }
 });
-
+/*
 setInterval(async () => {
     if (procesando) return;
     procesando = true;
@@ -230,6 +230,6 @@ setInterval(async () => {
     } finally {
         procesando = false;
     }
-}, 60000); // Cada minuto
+}, 60000); // Cada minuto*/
 
 client.login(TOKEN);
