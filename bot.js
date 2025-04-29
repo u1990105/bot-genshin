@@ -45,6 +45,11 @@ const client = new Client({
 client.once('ready', () => {
     console.error(`Bot listo como ${client.user.tag}`);
     console.error("@@@@@@@@@@@@@@@@@@@@@@@@")
+
+    // Crear el índice en fechaEnvio si no existe
+    Recordatorio.collection.createIndex({ fechaEnvio: 1 })
+        .then(() => console.log('✅ Índice en "fechaEnvio" creado o ya existente.'))
+        .catch(err => console.error('❌ Error al crear índice:', err));
 });
 
 client.on('messageCreate', async (message) => {
