@@ -1,3 +1,4 @@
+console.error("@@@@@@@@@@@@@@@@@@@@@@@@111")
 const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
 
@@ -46,7 +47,7 @@ const client = new Client({
 
 client.once('ready', () => {
     console.error(`Bot listo como ${client.user.tag}`);
-    console.error("@@@@@@@@@@@@@@@@@@@@@@@@")
+    console.error("@@@@@@@@@@@@@@@@@@@@@@@@12")
 
     // Crear el índice en fechaEnvio si no existe
     Recordatorio.collection.createIndex({ fechaEnvio: 1 })
@@ -205,6 +206,7 @@ client.on('messageCreate', async (message) => {
         return;
     }
 });
+
 /*
 setInterval(async () => {
     if (procesando) return;
@@ -218,7 +220,7 @@ setInterval(async () => {
             try {
                 const usuario = await client.users.fetch(r.userId);
                 if (usuario) {
-                    await usuario.send(`🔔 ¡Es hora de tu recordatorio de resina!\n${r.descripcion}`);
+                    await usuario.send(`¡Es hora de tu recordatorio de resina!\n${r.descripcion}`);
                 }
                 await Recordatorio.deleteOne({ _id: r._id });
             } catch (err) {
