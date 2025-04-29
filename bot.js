@@ -51,11 +51,11 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-    console.log(`Bot listo como ${client.user.tag}`);
+    console.log(`✅ Bot listo como ${client.user.tag}`);
 
     // Iniciar el servidor Express cuando el bot esté listo
     app.listen(port, () => {
-        console.log(`Servidor Express escuchando en http://localhost:8080`);
+        console.log(`✅ Servidor Express escuchando en http://localhost:8080`);
     });
 
     // Crear el índice en fechaEnvio si no existe
@@ -92,10 +92,10 @@ client.on('messageCreate', async (message) => {
             Comandos disponibles:
 
             - \`!resina n_resina=<tu cantidad> objetivo=<R/L/D/J/S> [n_veces=<cantidad>]\`  
-            👉 Calcula cuándo tendrás suficiente resina y te envía un recordatorio por DM.
+            👉 Calcula cuándo tendrás suficiente resina y te envía un recordatorio.
             
             - \`!listar\`  
-            📋 Muestra todos tus recordatorios activos.
+            📋 Muestra todos tus recordatorios activos que faltan por avisar.
 
             - \`!cancelar <número>\`  
             ❌ Cancela un recordatorio específico (usa el número de \`!listar\`).
@@ -152,27 +152,43 @@ client.on('messageCreate', async (message) => {
         const tiempo_horas = tiempo_necesario_min / 60;
 
         let descripcion = "";
+        let descrR = "";
         switch (objetivo) {
-            case "R": descripcion = `🌟 Resina completa en ${Math.round(tiempo_necesario_min)} min (~${tiempo_horas.toFixed(2)} h)`; break;
-            case "L": descripcion = `🌟 ${veces} Línea de Ley en ${Math.round(tiempo_necesario_min)} min`; break;
-            case "D": descripcion = `🌟 ${veces} Dominio(s) en ${Math.round(tiempo_necesario_min)} min`; break;
-            case "J": descripcion = `🌟 ${veces} Jefe(s) normales en ${Math.round(tiempo_necesario_min)} min`; break;
-            case "S": descripcion = `🌟 ${veces} Jefe(s) semanales en ${Math.round(tiempo_necesario_min)} min`; break;
+            case "R":
+                descrR = `🌟 Resina completa`;
+                descripcion =  ` ${descrR} en ${Math.round(tiempo_necesario_min)} min (~${tiempo_horas.toFixed(2)} h)`;
+                break;
+            case "L": 
+                descrR = `🌟 ${veces} Línea de Ley`
+                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                break;
+            case "D": 
+                descrR = `🌟 ${veces} Dominio(s)`
+                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                break;
+            case "J": 
+                descrR = `🌟 ${veces} Jefe(s) normales`
+                descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min`; 
+                break;
+            case "S":
+                descrR = `🌟 ${veces} Jefe(s) semanales`
+                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                break;
         }
-
+        const fechaR = new Date(Date.now() + tiempo_necesario_min * 60000)
         const nuevoRecordatorio = new Recordatorio({
             userId: message.author.id,
             n_resina,
             objetivo,
             n_veces: veces,
-            descripcion,
-            fechaEnvio: new Date(Date.now() + tiempo_necesario_min * 60000)
+            descripcion: descrR + ' ja disponible!',
+            fechaEnvio: fechaR
         });
 
         try {
             await nuevoRecordatorio.save();
             message.channel.send(descripcion);
-            await message.author.send(`🔔 ¡Recordatorio guardado! Te avisaré cuando sea el momento.`);
+            await message.author.send(`🔔 ¡Recordatorio guardado! Te avisaré aproximadamente el ${fechaR} `);
         } catch (err) {
             console.error('Error al guardar el recordatorio:', err);
             message.channel.send('❌ Error al guardar el recordatorio.');
@@ -191,7 +207,30 @@ client.on('messageCreate', async (message) => {
 
                 const lista = recordatorios.map((r, i) => {
                     const tiempoRestanteMin = Math.ceil((r.fechaEnvio - new Date()) / 60000);
-                    return `${i + 1}. ${r.descripcion} (en ${tiempoRestanteMin} min)`;
+                    let objetivoNombre = '';
+                    switch (r.objetivo) {
+                        case "R":
+                            objetivoNombre = 'Resina Completa';
+                            break;
+                        case "L":
+                            objetivoNombre = 'Línea de Ley';
+                            break;
+                        case "D":
+                            objetivoNombre = 'Dominio';
+                            break;
+                        case "J":
+                            objetivoNombre = 'Jefe Normal';
+                            break;
+                        case "S":
+                            objetivoNombre = 'Jefe Semanal';
+                            break;
+                        default:
+                            objetivoNombre = 'Objetivo Desconocido';
+                            break;
+                    }
+                
+                    return `${i + 1}. Resina: ${r.n_resina} | Objetivo: ${objetivoNombre} | Veces: ${r.n_veces} (en ${tiempoRestanteMin} min)`;
+                
                 }).join('\n');
 
                 message.channel.send(`📋 **Tus recordatorios activos:**\n${lista}`);
