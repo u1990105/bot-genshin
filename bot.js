@@ -62,6 +62,24 @@ client.once('ready', () => {
     Recordatorio.collection.createIndex({ fechaEnvio: 1 })
         .then(() => console.log('✅ Índice en "fechaEnvio" creado o ya existente.'))
         .catch(err => console.error('❌ Error al crear índice:', err));
+
+    // Iniciar el intervalo para revisar los recordatorios cada 5 minutos
+    setInterval(async () => {
+        const ahora = new Date();
+        const recordatorios = await Recordatorio.find({ fechaEnvio: { $lte: ahora } });
+
+        for (const r of recordatorios) {
+            try {
+                const usuario = await client.users.fetch(r.userId);
+                if (usuario) {
+                    await usuario.send(`¡Es hora de tu recordatorio!\n${r.descripcion}`);
+                }
+                await Recordatorio.deleteOne({ _id: r._id });
+            } catch (err) {
+                console.error('Error al enviar/eliminar recordatorio:', err);
+            }
+        }
+    }, 300000); // Revisa cada 5 minutos (300000 ms)
 });
 
 client.on('messageCreate', async (message) => {
@@ -217,32 +235,3 @@ client.on('messageCreate', async (message) => {
 });
 
 client.login(TOKEN);
-
-/*
-setInterval(async () => {
-    if (procesando) return;
-    procesando = true;
-
-    try {
-        const ahora = new Date();
-        const recordatorios = await Recordatorio.find({ fechaEnvio: { $lte: ahora } });
-
-        for (const r of recordatorios) {
-            try {
-                const usuario = await client.users.fetch(r.userId);
-                if (usuario) {
-                    await usuario.send(`¡Es hora de tu recordatorio de resina!\n${r.descripcion}`);
-                }
-                await Recordatorio.deleteOne({ _id: r._id });
-            } catch (err) {
-                console.error('Error al enviar/eliminar recordatorio:', err);
-            }
-        }
-    } catch (err) {
-        console.error('Error general del intervalo:', err);
-    } finally {
-        procesando = false;
-    }
-}, 60000); // Cada minuto*/
-
-
