@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 // Parámetros de resina
 const RESINA_MAX = 200;
 const REGEN_POR_MINUTO = 0.125; // 1 resina cada 8 minutos
+let procesando = false;
+
 
 const objetivos = {
     "R": 200,
@@ -205,19 +207,28 @@ client.on('messageCreate', async (message) => {
 });
 
 setInterval(async () => {
-    const ahora = new Date();
-    const recordatorios = await Recordatorio.find({ fechaEnvio: { $lte: ahora } });
+    if (procesando) return;
+    procesando = true;
 
-    for (const r of recordatorios) {
-        try {
-            const usuario = await client.users.fetch(r.userId);
-            if (usuario) {
-                await usuario.send(`🔔 ¡Es hora de tu recordatorio de resina!\n${r.descripcion}`);
+    try {
+        const ahora = new Date();
+        const recordatorios = await Recordatorio.find({ fechaEnvio: { $lte: ahora } });
+
+        for (const r of recordatorios) {
+            try {
+                const usuario = await client.users.fetch(r.userId);
+                if (usuario) {
+                    await usuario.send(`🔔 ¡Es hora de tu recordatorio de resina!\n${r.descripcion}`);
+                }
+                await Recordatorio.deleteOne({ _id: r._id });
+            } catch (err) {
+                console.error('Error al enviar/eliminar recordatorio:', err);
             }
-            await Recordatorio.deleteOne({ _id: r._id });
-        } catch (err) {
-            console.error('Error al enviar/eliminar recordatorio:', err);
         }
+    } catch (err) {
+        console.error('Error general del intervalo:', err);
+    } finally {
+        procesando = false;
     }
 }, 60000); // Cada minuto
 
