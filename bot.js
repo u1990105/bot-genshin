@@ -55,7 +55,7 @@ client.once('ready', () => {
 
     // Iniciar el servidor Express cuando el bot esté listo
     app.listen(port, () => {
-        console.log(`✅ Servidor Express escuchando en http://localhost:8080`);
+        console.log(`✅ Servidor Express escuchando en http://localhost:${port}`);
     });
 
     // Crear el índice en fechaEnvio si no existe
