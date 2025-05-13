@@ -2,7 +2,7 @@ const express = require('express');
 const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
 const app = express();
-const port = process.env.PORT || 8080;;
+const port = process.env.PORT || 8080;
 
 // Parámetros de resina
 const RESINA_MAX = 200;
