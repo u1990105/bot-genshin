@@ -1,10 +1,8 @@
-console.log("✅ Bot de Discord iniciado correctamente en Azure App Service");
-
 const express = require('express');
 const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;;
 
 // Parámetros de resina
 const RESINA_MAX = 200;
