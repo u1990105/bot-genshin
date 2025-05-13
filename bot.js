@@ -150,30 +150,32 @@ client.on('messageCreate', async (message) => {
 
         const tiempo_necesario_min = (resina_necesaria - n_resina) / REGEN_POR_MINUTO;
         const tiempo_horas = tiempo_necesario_min / 60;
+        const nombreUsuario = message.author.username;
 
         let descripcion = "";
         let descrR = "";
         switch (objetivo) {
             case "R":
-                descrR = `🌟 Resina completa`;
-                descripcion =  ` ${descrR} en ${Math.round(tiempo_necesario_min)} min (~${tiempo_horas.toFixed(2)} h)`;
+                descrR = `🌟 ${nombreUsuario} tendrá Resina completa`;
+                descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min (~${tiempo_horas.toFixed(2)} h)`;
                 break;
             case "L": 
-                descrR = `🌟 ${veces} Línea de Ley`
-                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                descrR = `🌟 ${nombreUsuario} podrá hacer ${veces} Línea(s) de Ley`;
+                descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min`;
                 break;
             case "D": 
-                descrR = `🌟 ${veces} Dominio(s)`
-                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                descrR = `🌟 ${nombreUsuario} podrá hacer ${veces} Dominio(s)`;
+                descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min`;
                 break;
             case "J": 
-                descrR = `🌟 ${veces} Jefe(s) normales`
+                descrR = `🌟 ${nombreUsuario} podrá hacer ${veces} Jefe(s) normales`;
                 descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min`; 
                 break;
             case "S":
-                descrR = `🌟 ${veces} Jefe(s) semanales`
-                descripcion = ` ${descrR} en ${Math.round(tiempo_necesario_min)} min`;
+                descrR = `🌟 ${nombreUsuario} podrá hacer ${veces} Jefe(s) semanales`;
+                descripcion = `${descrR} en ${Math.round(tiempo_necesario_min)} min`;
                 break;
+
         }
         const fechaR = new Date(Date.now() + tiempo_necesario_min * 60000)
         const nuevoRecordatorio = new Recordatorio({
