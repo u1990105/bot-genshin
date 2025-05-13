@@ -1,6 +1,7 @@
 {
     "name": "bot-resina",
     "version": "1.0.0",
+    "type": "module",
     "description": "Bot de Discord para gestionar la resina",
     "main": "bot.js",
     "scripts": {
